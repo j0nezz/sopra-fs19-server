@@ -42,4 +42,16 @@ public class UserService {
     public boolean usernameAvailable(User user) {
         return (userRepository.findByUsername(user.getUsername()) == null );
     }
+
+    public String getToken (String username){
+        return (userRepository.findByUsername(username).getToken());
+    }
+
+    public User getUserByUsername(String username){
+        return userRepository.findByUsername(username);
+    }
+
+    public boolean checkLogin(String username, String password){
+        return (userRepository.findByUsername(username).getPassword().equals(password));
+    }
 }
