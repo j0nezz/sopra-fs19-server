@@ -27,11 +27,33 @@ public class UserController {
     }
 
     @PostMapping("/users")
+    @ResponseStatus(HttpStatus.CREATED)
     User createUser(@RequestBody User newUser) {
         if(service.usernameAvailable(newUser)) {
             return service.createUser(newUser);
         } else {
             throw new UsernameTakenException("Username already taken");
+        }
+    }
+
+    @GetMapping("/users/{userId}")
+    User getUser(@PathVariable("userId") String id){
+        User user = service.getUserById(Long.parseLong(id));
+
+        if(user != null) return user;
+        else{
+            throw new ResponseStatusException( HttpStatus.NOT_FOUND, "User not found");
+        }
+
+    }
+
+    @PutMapping("/users/{userId}")
+    ResponseEntity<Void> updateUser(@PathVariable("userId") String id, @RequestBody User updatedUser){
+        if( service.updateUser(Long.parseLong(id), updatedUser) ) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            throw new ResponseStatusException( HttpStatus.NOT_FOUND, "user with userId was not\n" +
+                    "found");
         }
     }
 

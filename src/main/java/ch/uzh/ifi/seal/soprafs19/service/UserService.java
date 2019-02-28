@@ -50,8 +50,33 @@ public class UserService {
     public User getUserByUsername(String username){
         return userRepository.findByUsername(username);
     }
-
+    public User getUserById(long userId){
+        return userRepository.findById(userId);
+    }
     public boolean checkLogin(String username, String password){
         return (userRepository.findByUsername(username).getPassword().equals(password));
+    }
+
+    public boolean updateUser(long userId, User UpdatedUser){
+        // Check if Updated User
+        if(userId != UpdatedUser.getId()){
+            return false;
+        }
+        User oldUser = getUserById(userId);
+        // Check if different fields are set, so we don't ned to send all fields when updating a user.
+
+        if (UpdatedUser.getUsername() != null){
+            oldUser.setUsername(UpdatedUser.getUsername());
+        }
+        if (UpdatedUser.getPassword() != null){
+            oldUser.setPassword(UpdatedUser.getPassword());
+        }
+        if (UpdatedUser.getName() != null){
+            oldUser.setName(UpdatedUser.getName());
+        }
+        userRepository.save(oldUser);
+        return true;
+
+
     }
 }
