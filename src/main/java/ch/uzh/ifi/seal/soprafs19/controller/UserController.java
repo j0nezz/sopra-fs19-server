@@ -60,6 +60,7 @@ public class UserController {
     @PostMapping("/login")
     User login(@RequestBody Login data){
         if(service.checkLogin(data.getUsername(), data.getPassword())){
+            service.login(data);
             return service.getUserByUsername(data.getUsername());
         } else {
             throw new ResponseStatusException(

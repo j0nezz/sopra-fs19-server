@@ -1,6 +1,7 @@
 package ch.uzh.ifi.seal.soprafs19.service;
 
 import ch.uzh.ifi.seal.soprafs19.constant.UserStatus;
+import ch.uzh.ifi.seal.soprafs19.entity.Login;
 import ch.uzh.ifi.seal.soprafs19.entity.User;
 import ch.uzh.ifi.seal.soprafs19.repository.UserRepository;
 import org.slf4j.Logger;
@@ -20,7 +21,6 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-
     @Autowired
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -34,6 +34,7 @@ public class UserService {
         newUser.setToken(UUID.randomUUID().toString());
         newUser.setStatus(UserStatus.OFFLINE);
         newUser.setCreationDate(new Date());
+        newUser.setBirthDate(newUser.getBirthDate());
         userRepository.save(newUser);
         log.debug("Created Information for User: {}", newUser);
         return newUser;
@@ -53,8 +54,14 @@ public class UserService {
     public User getUserById(long userId){
         return userRepository.findById(userId);
     }
+
     public boolean checkLogin(String username, String password){
         return (userRepository.findByUsername(username).getPassword().equals(password));
+    }
+    public void login(Login data){
+        User user = userRepository.findByUsername(data.getUsername());
+        user.setStatus(UserStatus.ONLINE);
+        userRepository.save(user);
     }
 
     public boolean updateUser(long userId, User UpdatedUser){
@@ -76,7 +83,6 @@ public class UserService {
         }
         userRepository.save(oldUser);
         return true;
-
 
     }
 }
