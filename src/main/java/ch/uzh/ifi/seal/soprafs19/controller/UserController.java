@@ -1,6 +1,7 @@
 package ch.uzh.ifi.seal.soprafs19.controller;
 
 import ch.uzh.ifi.seal.soprafs19.entity.Login;
+import ch.uzh.ifi.seal.soprafs19.entity.Logout;
 import ch.uzh.ifi.seal.soprafs19.entity.User;
 import ch.uzh.ifi.seal.soprafs19.exception.UsernameTakenException;
 import ch.uzh.ifi.seal.soprafs19.repository.UserRepository;
@@ -46,7 +47,7 @@ public class UserController {
         }
 
     }
-
+    @CrossOrigin(origins = "http://localhost:3000")
     @PutMapping("/users/{userId}")
     ResponseEntity<Void> updateUser(@PathVariable("userId") String id, @RequestBody User updatedUser){
         if( service.updateUser(Long.parseLong(id), updatedUser) ) {
@@ -65,6 +66,17 @@ public class UserController {
         } else {
             throw new ResponseStatusException(
                     HttpStatus.UNAUTHORIZED, "login failed"
+            );
+        }
+    }
+
+    @PostMapping("/logout")
+    ResponseEntity<Void> logout(@RequestBody Logout data){
+        if( service.logout(data)) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Could not find a user with matching userId"
             );
         }
     }

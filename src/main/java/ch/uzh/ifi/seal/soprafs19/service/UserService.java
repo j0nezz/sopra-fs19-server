@@ -2,6 +2,7 @@ package ch.uzh.ifi.seal.soprafs19.service;
 
 import ch.uzh.ifi.seal.soprafs19.constant.UserStatus;
 import ch.uzh.ifi.seal.soprafs19.entity.Login;
+import ch.uzh.ifi.seal.soprafs19.entity.Logout;
 import ch.uzh.ifi.seal.soprafs19.entity.User;
 import ch.uzh.ifi.seal.soprafs19.repository.UserRepository;
 import org.slf4j.Logger;
@@ -31,7 +32,6 @@ public class UserService {
     }
 
     public User createUser(User newUser) {
-        newUser.setToken(UUID.randomUUID().toString());
         newUser.setStatus(UserStatus.OFFLINE);
         newUser.setCreationDate(new Date());
         newUser.setBirthDate(newUser.getBirthDate());
@@ -60,8 +60,21 @@ public class UserService {
     }
     public void login(Login data){
         User user = userRepository.findByUsername(data.getUsername());
+        user.setToken(UUID.randomUUID().toString());
         user.setStatus(UserStatus.ONLINE);
         userRepository.save(user);
+    }
+
+    public boolean logout(Logout data){
+        User user = userRepository.findByToken(data.getToken());
+        if (user != null){
+            user.setStatus(UserStatus.OFFLINE);
+            user.setToken(null);
+            userRepository.save(user);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public boolean updateUser(long userId, User UpdatedUser){
@@ -81,8 +94,13 @@ public class UserService {
         if (UpdatedUser.getName() != null){
             oldUser.setName(UpdatedUser.getName());
         }
+        if (UpdatedUser.getBirthDate() != null){
+            oldUser.setBirthDate(UpdatedUser.getBirthDate());
+        }
         userRepository.save(oldUser);
         return true;
 
     }
+
+
 }

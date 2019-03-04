@@ -18,6 +18,7 @@ public class User implements Serializable {
 
 	@Id
 	@GeneratedValue
+	@Column(nullable = false)
 	private Long id;
 	
 	@Column(nullable = false) 
@@ -26,7 +27,7 @@ public class User implements Serializable {
 	@Column(nullable = false, unique = true) 
 	private String username;
 	
-	@Column(nullable = false, unique = true) 
+	@Column(nullable = true, unique = true)
 	private String token;
 
 	@Column(nullable = false)
