@@ -40,7 +40,7 @@ public class User implements Serializable {
 	private Date creationDate;
 
 	@Column(nullable = false)
-	private String birthDate;
+	private Date birthDate;
 
 	public Long getId() {
 		return id;
@@ -98,14 +98,13 @@ public class User implements Serializable {
 		this.creationDate = creationDate;
 	}
 
-	public String getBirthDate() {
+	public Date getBirthDate() {
 		return birthDate;
 	}
 
-	public void setBirthDate(String birthDate) {
+	public void setBirthDate(Date birthDate) {
 		this.birthDate = birthDate;
 	}
-
 	@Override
 	public boolean equals(Object o) {
 		if (o == this) return true;
@@ -115,6 +114,7 @@ public class User implements Serializable {
 		User user = (User) o;
 		return this.getId().equals(user.getId());
 	}
+
 
 
 }
