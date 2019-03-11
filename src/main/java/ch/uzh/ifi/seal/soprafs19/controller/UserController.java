@@ -40,13 +40,12 @@ public class UserController {
 
     // Show specific user
     @GetMapping("/users/{userId}")
-    User getUser(@PathVariable("userId") String id, @RequestBody AuthRequest auth){
+    User getUser(@PathVariable("userId") String id, @RequestHeader("Token") String token){
         // Check if user is logged in
-        if( !authService.checkRequest(auth)){
-            throw new ResponseStatusException( HttpStatus.UNAUTHORIZED);
+        if( !authService.checkToken(token)){
+            throw new ResponseStatusException( HttpStatus.UNAUTHORIZED, "You need to be logged in!");
         }
         User user = service.getUserById(Long.parseLong(id));
-
         if(user != null) return user;
         else{
             throw new ResponseStatusException( HttpStatus.NOT_FOUND, "User not found");
@@ -55,15 +54,17 @@ public class UserController {
     }
     @CrossOrigin(origins = "http://localhost:3000")
     @PutMapping("/users/{userId}")
-    ResponseEntity<Void> updateUser(@PathVariable("userId") String id, @RequestBody EditUser editUser){
+    ResponseEntity<Void> updateUser(@PathVariable("userId") String id, @RequestBody EditUser editUser, @RequestHeader("Token") String token){
         // Check if user wants to edit his own profile
         Long editId = Long.parseLong(id);
+        if( !authService.checkToken(token)){
+            throw new ResponseStatusException( HttpStatus.UNAUTHORIZED, "You need to be logged in!");
+        }
         if( editId != editUser.getId()) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You're only allowed to edit your own profile!");
         }
-
-        // Check if user is logged in
-        AuthRequest authReq = new AuthRequest(editUser.getId(), editUser.getToken());
+        // Check if token matches user to update
+        AuthRequest authReq = new AuthRequest(editUser.getId(), token);
         if ( !authService.checkRequest(authReq)) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Please login first");
         }

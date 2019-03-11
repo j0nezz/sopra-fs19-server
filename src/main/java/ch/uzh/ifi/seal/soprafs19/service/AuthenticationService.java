@@ -58,4 +58,8 @@ public class AuthenticationService {
         }
     }
 
+    public boolean checkToken(String token){
+        return (userRepository.findByToken(token) != null);
+    }
+
 }

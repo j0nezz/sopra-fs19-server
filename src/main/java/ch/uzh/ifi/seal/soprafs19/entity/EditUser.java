@@ -4,7 +4,6 @@ import java.util.Date;
 
 public class EditUser {
     private long id;
-    private String token;
     private Date birthDate;
     private String username;
 
@@ -14,14 +13,6 @@ public class EditUser {
 
     public void setId(long id) {
         this.id = id;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
     }
 
     public Date getBirthDate() {
