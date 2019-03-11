@@ -1,8 +1,7 @@
 package ch.uzh.ifi.seal.soprafs19.service;
 
 import ch.uzh.ifi.seal.soprafs19.constant.UserStatus;
-import ch.uzh.ifi.seal.soprafs19.entity.Login;
-import ch.uzh.ifi.seal.soprafs19.entity.Logout;
+import ch.uzh.ifi.seal.soprafs19.entity.EditUser;
 import ch.uzh.ifi.seal.soprafs19.entity.User;
 import ch.uzh.ifi.seal.soprafs19.repository.UserRepository;
 import org.slf4j.Logger;
@@ -11,10 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
-import java.util.UUID;
 
 @Service
 @Transactional
@@ -46,10 +42,6 @@ public class UserService {
         return (userRepository.findByUsername(user.getUsername()) == null );
     }
 
-    public String getToken (String username){
-        return (userRepository.findByUsername(username).getToken());
-    }
-
     public User getUserByUsername(String username){
         return userRepository.findByUsername(username);
     }
@@ -57,51 +49,18 @@ public class UserService {
         return userRepository.findById(userId);
     }
 
-    public boolean checkLogin(String username, String password){
-        return (userRepository.findByUsername(username).getPassword().equals(password));
-    }
-    public void login(Login data){
-        User user = userRepository.findByUsername(data.getUsername());
-        user.setToken(UUID.randomUUID().toString());
-        user.setStatus(UserStatus.ONLINE);
-        userRepository.save(user);
-    }
-
-    public boolean logout(Logout data){
-        User user = userRepository.findByToken(data.getToken());
-        if (user != null){
-            user.setStatus(UserStatus.OFFLINE);
-            user.setToken(null);
-            userRepository.save(user);
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public boolean updateUser(long userId, User UpdatedUser){
-        // Check if Updated User
-        if(userId != UpdatedUser.getId()){
-            return false;
-        }
-        User oldUser = getUserById(userId);
+    public boolean updateUser(EditUser editedUser){
+        User oldUser = getUserById(editedUser.getId());
         // Check if different fields are set, so we don't ned to send all fields when updating a user.
 
-        if (UpdatedUser.getUsername() != null){
-            oldUser.setUsername(UpdatedUser.getUsername());
+        if (editedUser.getUsername() != null){
+            oldUser.setUsername(editedUser.getUsername());
         }
-        if (UpdatedUser.getPassword() != null){
-            oldUser.setPassword(UpdatedUser.getPassword());
-        }
-        if (UpdatedUser.getName() != null){
-            oldUser.setName(UpdatedUser.getName());
-        }
-        if (UpdatedUser.getBirthDate() != null){
-            oldUser.setBirthDate(UpdatedUser.getBirthDate());
+        if (editedUser.getBirthDate() != null){
+            oldUser.setBirthDate(editedUser.getBirthDate());
         }
         userRepository.save(oldUser);
         return true;
-
     }
 
 
