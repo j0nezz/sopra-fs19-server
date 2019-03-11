@@ -23,7 +23,12 @@ public class AuthenticationService {
     }
 
     public boolean checkLogin(String username, String password){
-        return (userRepository.findByUsername(username).getPassword().equals(password));
+        if(userRepository.findByUsername(username) != null) {
+            return (userRepository.findByUsername(username).getPassword().equals(password));
+        } else
+        {
+            return false;
+        }
     }
     public void login(User data){
         User user = userRepository.findByUsername(data.getUsername());
@@ -44,7 +49,7 @@ public class AuthenticationService {
         }
     }
 
-    public Boolean checkRequest (AuthRequest data){
+    public boolean checkRequest (AuthRequest data){
         User user = userRepository.findById(data.getId());
         if( user == null || user.getToken() == null){
             return false;

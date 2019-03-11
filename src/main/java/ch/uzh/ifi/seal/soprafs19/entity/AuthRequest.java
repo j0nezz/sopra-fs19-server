@@ -5,6 +5,8 @@ public class AuthRequest {
         this.id = id;
         this.token = token;
     }
+    public AuthRequest(){}
+
     private long id;
     private String token;
 
