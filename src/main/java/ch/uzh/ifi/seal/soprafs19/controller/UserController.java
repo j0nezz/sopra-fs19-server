@@ -1,14 +1,16 @@
 package ch.uzh.ifi.seal.soprafs19.controller;
 import ch.uzh.ifi.seal.soprafs19.entity.AuthRequest;
 import ch.uzh.ifi.seal.soprafs19.entity.EditUser;
+import ch.uzh.ifi.seal.soprafs19.entity.PublicUserData;
 import ch.uzh.ifi.seal.soprafs19.entity.User;
-import ch.uzh.ifi.seal.soprafs19.exception.UsernameTakenException;
 import ch.uzh.ifi.seal.soprafs19.service.AuthenticationService;
 import ch.uzh.ifi.seal.soprafs19.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 public class UserController {
@@ -23,36 +25,42 @@ public class UserController {
 
     // Return all users
     @GetMapping("/users")
-    Iterable<User> all() {
-        return service.getUsers();
+    Iterable<PublicUserData> all(@RequestHeader("Token") String token) {
+        if( !authService.checkToken(token)){
+            throw new ResponseStatusException( HttpStatus.UNAUTHORIZED, "You need to be logged in!");
+        }
+        List<PublicUserData> publicUser = new ArrayList<>();
+        service.getUsers().forEach( user ->
+            publicUser.add(new PublicUserData(user,false ))
+        );
+        return publicUser;
     }
 
     // Register User
     @PostMapping("/users")
     @ResponseStatus(HttpStatus.CREATED)
-    User createUser(@RequestBody User newUser) {
+    PublicUserData createUser(@RequestBody User newUser) {
         if(service.usernameAvailable(newUser)) {
-            return service.createUser(newUser);
+            return new PublicUserData(service.createUser(newUser), false);
         } else {
-            throw new UsernameTakenException("Username already taken");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Username already taken");
         }
     }
 
     // Show specific user
     @GetMapping("/users/{userId}")
-    User getUser(@PathVariable("userId") String id, @RequestHeader("Token") String token){
+    PublicUserData getUser(@PathVariable("userId") String id, @RequestHeader("Token") String token){
         // Check if user is logged in
         if( !authService.checkToken(token)){
             throw new ResponseStatusException( HttpStatus.UNAUTHORIZED, "You need to be logged in!");
         }
         User user = service.getUserById(Long.parseLong(id));
-        if(user != null) return user;
+        if(user != null) return new PublicUserData(user, false);
         else{
             throw new ResponseStatusException( HttpStatus.NOT_FOUND, "User not found");
         }
 
     }
-    @CrossOrigin(origins = "http://localhost:3000")
     @PutMapping("/users/{userId}")
     ResponseEntity<Void> updateUser(@PathVariable("userId") String id, @RequestBody EditUser editUser, @RequestHeader("Token") String token){
         // Check if user wants to edit his own profile
@@ -77,6 +85,5 @@ public class UserController {
                     "found");
         }
     }
-
 
 }

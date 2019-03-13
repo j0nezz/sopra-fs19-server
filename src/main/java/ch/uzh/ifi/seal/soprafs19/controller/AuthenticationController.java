@@ -1,6 +1,7 @@
 package ch.uzh.ifi.seal.soprafs19.controller;
 
 import ch.uzh.ifi.seal.soprafs19.entity.Logout;
+import ch.uzh.ifi.seal.soprafs19.entity.PublicUserData;
 import ch.uzh.ifi.seal.soprafs19.entity.User;
 import ch.uzh.ifi.seal.soprafs19.service.AuthenticationService;
 import ch.uzh.ifi.seal.soprafs19.service.UserService;
@@ -22,10 +23,10 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    User login(@RequestBody User data){
+    PublicUserData login(@RequestBody User data){
         if(authService.checkLogin(data.getUsername(), data.getPassword())){
             authService.login(data);
-            return userService.getUserByUsername(data.getUsername());
+            return new PublicUserData(userService.getUserByUsername(data.getUsername()), true);
         } else {
             throw new ResponseStatusException(
                     HttpStatus.UNAUTHORIZED, "login failed"

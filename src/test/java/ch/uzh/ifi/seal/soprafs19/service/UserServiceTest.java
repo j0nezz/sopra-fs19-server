@@ -3,6 +3,7 @@ package ch.uzh.ifi.seal.soprafs19.service;
 import ch.uzh.ifi.seal.soprafs19.Application;
 import ch.uzh.ifi.seal.soprafs19.constant.UserStatus;
 import ch.uzh.ifi.seal.soprafs19.entity.EditUser;
+import ch.uzh.ifi.seal.soprafs19.entity.PublicUserData;
 import ch.uzh.ifi.seal.soprafs19.entity.User;
 import ch.uzh.ifi.seal.soprafs19.repository.UserRepository;
 import org.junit.Assert;
@@ -90,9 +91,11 @@ public class UserServiceTest {
         testUser.setUsername("getUserById");
         testUser.setPassword("password");
         testUser.setBirthDate(new Date());
-        User createdUser = userService.createUser(testUser);
+        PublicUserData createdUser = new PublicUserData(userService.createUser(testUser), false);
 
-
+        Assert.assertEquals(testUser.getUsername(), createdUser.getUsername());
+        Assert.assertEquals(testUser.getName(), createdUser.getName());
+        Assert.assertEquals(testUser.getBirthDate(), createdUser.getBirthDate());
         Assert.assertEquals(testUser, userRepository.findById(createdUser.getId()).get());
     }
 
@@ -117,6 +120,7 @@ public class UserServiceTest {
         Assert.assertEquals(editedUser.getBirthDate(), userRepository.findById(createdUser.getId()).get().getBirthDate());
 
     }
+
 
 
 
