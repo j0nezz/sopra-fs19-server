@@ -31,7 +31,7 @@ public class AuthenticationController {
             authService.login(data);
             return new PublicUserData(userService.getUserByUsername(data.getUsername()), true);
         } else {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "login failed");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Wrong username / password");
         }
     }
 
