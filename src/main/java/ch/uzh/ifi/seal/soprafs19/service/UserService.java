@@ -26,10 +26,12 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
+    // return all users
     public Iterable<User> getUsers() {
         return this.userRepository.findAll();
     }
 
+    // Create user from submitted data, add creation date
     public User createUser(User newUser) {
         newUser.setStatus(UserStatus.OFFLINE);
         newUser.setCreationDate(new Date());
@@ -39,6 +41,7 @@ public class UserService {
         return newUser;
     }
 
+    // Check if username is available
     public boolean usernameAvailable(User user) {
         return (userRepository.findByUsername(user.getUsername()) == null );
     }
@@ -46,10 +49,11 @@ public class UserService {
     public User getUserByUsername(String username){
         return userRepository.findByUsername(username);
     }
+
     public User getUserById(long userId){
         return userRepository.findById(userId);
     }
-
+    // Update user data
     public boolean updateUser(EditUser editedUser){
         User oldUser = getUserById(editedUser.getId());
         // Check if different fields are set, so we don't ned to send all fields when updating a user.

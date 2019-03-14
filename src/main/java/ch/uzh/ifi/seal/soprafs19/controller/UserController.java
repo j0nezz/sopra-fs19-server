@@ -23,7 +23,9 @@ public class UserController {
         this.authService = authService;
     }
 
-    // Return all users
+    /*
+    === GET ALL USERS ===
+     */
     @GetMapping("/users")
     Iterable<PublicUserData> all(@RequestHeader("Token") String token) {
         if( !authService.checkToken(token)){
@@ -36,7 +38,9 @@ public class UserController {
         return publicUser;
     }
 
-    // Register User
+    /*
+    === REGISTER USER ===
+     */
     @PostMapping("/users")
     @ResponseStatus(HttpStatus.CREATED)
     PublicUserData createUser(@RequestBody User newUser) {
@@ -47,7 +51,9 @@ public class UserController {
         }
     }
 
-    // Show specific user
+    /*
+    === GET USER PROFILE ===
+     */
     @GetMapping("/users/{userId}")
     PublicUserData getUser(@PathVariable("userId") String id, @RequestHeader("Token") String token){
         // Check if user is logged in
@@ -61,20 +67,27 @@ public class UserController {
         }
 
     }
+
+    /*
+    === UPDATE USER PROFILE
+     */
     @PutMapping("/users/{userId}")
     ResponseEntity<Void> updateUser(@PathVariable("userId") String id, @RequestBody EditUser editUser, @RequestHeader("Token") String token){
-        // Check if user wants to edit his own profile
+        // Get user id from path variable
         Long editId = Long.parseLong(id);
+
+        // Check if user is logged in
         if( !authService.checkToken(token)){
             throw new ResponseStatusException( HttpStatus.UNAUTHORIZED, "You need to be logged in!");
         }
+        // Check if submitted data corresponds to submitted url
         if( editId != editUser.getId()) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You're only allowed to edit your own profile!");
         }
         // Check if token matches user to update
         AuthRequest authReq = new AuthRequest(editUser.getId(), token);
         if ( !authService.checkRequest(authReq)) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Please login first");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You're not authorized to edit this user");
         }
 
         // Update user

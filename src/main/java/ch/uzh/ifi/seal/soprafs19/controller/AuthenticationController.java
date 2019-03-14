@@ -22,26 +22,28 @@ public class AuthenticationController {
         this.userService = userService;
     }
 
+    /*
+    === LOGIN ===
+     */
     @PostMapping("/login")
     PublicUserData login(@RequestBody User data){
         if(authService.checkLogin(data.getUsername(), data.getPassword())){
             authService.login(data);
             return new PublicUserData(userService.getUserByUsername(data.getUsername()), true);
         } else {
-            throw new ResponseStatusException(
-                    HttpStatus.UNAUTHORIZED, "login failed"
-            );
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "login failed");
         }
     }
 
+    /*
+    === LOGOUT ===
+     */
     @PostMapping("/logout")
     ResponseEntity<Void> logout(@RequestBody Logout data){
         if( authService.logout(data)) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } else {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "Could not find a user with matching userId"
-            );
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not find a user with matching userId");
         }
     }
 

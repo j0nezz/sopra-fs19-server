@@ -22,6 +22,7 @@ public class AuthenticationService {
         this.userRepository = userRepository;
     }
 
+    // Check if username and password matches
     public boolean checkLogin(String username, String password){
         if(userRepository.findByUsername(username) != null) {
             return (userRepository.findByUsername(username).getPassword().equals(password));
@@ -30,13 +31,14 @@ public class AuthenticationService {
             return false;
         }
     }
+    // Login and generate token
     public void login(User data){
         User user = userRepository.findByUsername(data.getUsername());
         user.setToken(UUID.randomUUID().toString());
         user.setStatus(UserStatus.ONLINE);
         userRepository.save(user);
     }
-
+    // Logout and delete token
     public boolean logout(Logout data){
         User user = userRepository.findByToken(data.getToken());
         if (user != null){
@@ -48,7 +50,7 @@ public class AuthenticationService {
             return false;
         }
     }
-
+    // Check if token matches ID
     public boolean checkRequest (AuthRequest data){
         User user = userRepository.findById(data.getId());
         if( user == null || user.getToken() == null){
@@ -57,7 +59,7 @@ public class AuthenticationService {
             return (user.getToken().equals(data.getToken()));
         }
     }
-
+    // Check if logged in user with this token exists
     public boolean checkToken(String token){
         return (userRepository.findByToken(token) != null);
     }
